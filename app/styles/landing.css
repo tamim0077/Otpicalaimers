@@ -1,0 +1,195 @@
+/* Landing page: 3D transforms, keyframes and reveal states Tailwind 3.0 lacks. */
+
+.landing {
+  font-family: "Plus Jakarta Sans", "Noto Sans Bengali", ui-sans-serif,
+    system-ui, sans-serif;
+}
+.font-bn {
+  font-family: "Noto Sans Bengali", "Plus Jakarta Sans", sans-serif;
+}
+
+.hero-backdrop {
+  background: radial-gradient(
+      60% 50% at 75% 40%,
+      rgba(59, 130, 246, 0.28),
+      transparent 70%
+    ),
+    radial-gradient(45% 40% at 15% 80%, rgba(139, 92, 246, 0.25), transparent),
+    radial-gradient(30% 30% at 50% 0%, rgba(34, 211, 238, 0.15), transparent),
+    #020617;
+}
+
+.grid-floor {
+  position: absolute;
+  inset: auto -50% -10% -50%;
+  height: 55%;
+  background-image: linear-gradient(
+      rgba(96, 165, 250, 0.18) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.18) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(600px) rotateX(62deg);
+  transform-origin: top center;
+  mask-image: linear-gradient(to bottom, transparent, black 30%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 30%,
+    transparent
+  );
+  animation: floor-scroll 6s linear infinite;
+}
+@keyframes floor-scroll {
+  to {
+    background-position: 0 56px;
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #60a5fa, #a78bfa 45%, #22d3ee);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.glass {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Floating hero cards */
+.float-stage {
+  perspective: 1200px;
+}
+.float-card {
+  transform-style: preserve-3d;
+  animation: float 7s ease-in-out infinite;
+}
+.float-card:nth-child(2) {
+  animation-delay: -2.3s;
+}
+.float-card:nth-child(3) {
+  animation-delay: -4.6s;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(8deg) rotateY(-14deg);
+  }
+  50% {
+    transform: translate3d(0, -16px, 30px) rotateX(4deg) rotateY(-6deg);
+  }
+}
+
+/* Pointer-driven tilt; --rx/--ry are set from JS */
+.tilt {
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg));
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.tilt:hover {
+  box-shadow: 0 30px 60px -20px rgba(59, 130, 246, 0.45);
+}
+.tilt-pop {
+  transform: translateZ(40px);
+}
+.tilt-glare {
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.14),
+    transparent 55%
+  );
+}
+
+/* Tilted dashboard mock */
+.dash-stage {
+  perspective: 1600px;
+}
+.dash {
+  transform: rotateX(18deg) rotateY(-16deg) rotateZ(3deg);
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.dash-stage:hover .dash {
+  transform: rotateX(6deg) rotateY(-4deg) rotateZ(0deg);
+}
+.bar-fill {
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.is-visible .bar-fill {
+  transform: scaleX(1);
+}
+
+/* Subject marquee */
+.marquee {
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Scroll reveal: only hidden once JS has opted in, so SSR/no-JS shows content */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(40px) rotateX(12deg);
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.reveal-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.step-orb {
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.12),
+    0 0 40px rgba(59, 130, 246, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-floor,
+  .text-gradient,
+  .float-card,
+  .marquee-track {
+    animation: none;
+  }
+  .tilt,
+  .dash,
+  .bar-fill,
+  .reveal-ready [data-reveal] {
+    transition: none;
+  }
+  .reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
